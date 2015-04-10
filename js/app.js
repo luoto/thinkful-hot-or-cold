@@ -17,25 +17,33 @@ $(document).ready(function(){
   		$(".overlay").fadeOut(1000);
   	});
 
+    /*--- Start a new game ---*/
     $(".new").click(function() {
         newGame();
     });
 
+    /*--- Process user input ---*/
     $("#guessButton").click(function(e) {
         e.preventDefault();
 
-        //get and validate user input
+        // get and validate user input
         guess = $('#userGuess').val();
         if(!validInput(guess)) {
             updateFeedbackMsg('Guess must be between 0 and 100');
             return;
         }
 
+        // check to see if user won
         if(guess == targetNum) {
             updateFeedbackMsg('1000% HOT, Congrats!');
             $('#guessButton').prop('disabled', true);
+            return;
         }
 
+        // provide hot || cold feedback
+        hotnessLevel();
+
+        // update counter and guess list
         $('#count').text(++numGuesses);
         $('#guessList').append('<li>' + guess + '</li>');
     });
@@ -53,10 +61,12 @@ function newGame() {
     $('#guessButton').prop('disabled', false);
 };
 
+/*--- Generates a random int between 0 and 100 ---*/
 function randNum() {
     return Math.floor(Math.random() * 100 + 1);
 };
 
+/*--- Checks userinput for a valid numerical input ---*/
 function validInput(guess) {
 
     if(isNaN(+guess)) {
@@ -68,8 +78,30 @@ function validInput(guess) {
     else {
         return true;
     }
-}
+};
 
+/*--- Provides feedback to the user ---*/
+function hotnessLevel() {
+    var diff = Math.abs(targetNum - guess);
+
+    if(diff > 50) {
+        updateFeedbackMsg('Ice Cold');
+    }
+    else if(diff > 30) {
+        updateFeedbackMsg('Cold');
+    }
+    else if(diff > 20) {
+        updateFeedbackMsg('Warm');
+    }
+    else if(diff > 10) {
+        updateFeedbackMsg('Hot');
+    }
+    else {
+        updateFeedbackMsg('Very Hot');
+    }
+};
+
+/*--- Updates text in the feedback box ---*/
 function updateFeedbackMsg (msg) {
     $('#feedback').text(msg);
-}
+};
